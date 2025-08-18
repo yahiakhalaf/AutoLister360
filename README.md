@@ -97,13 +97,13 @@ autolister360/
    Create a `.env` file in the root directory:
    ```ini
    # SMTP Configuration (Gmail example)
-   SMTP_USERNAME="your-email@gmail.com"
-   SMTP_PASSWORD="your-app-password"
+   SMTP_USERNAME=your-email@gmail.com
+   SMTP_PASSWORD=your-app-password
    
    # Azure OpenAI Configuration
-   AZURE_DEPLOYMENT_ENDPOINT="https://your-resource-name.openai.azure.com/"
-   AZURE_DEPLOYMENT_NAME="your-deployment-name"
-   AZURE_OPENAI_API_KEY="your-azure-openai-api-key"
+   AZURE_DEPLOYMENT_ENDPOINT=https://your-resource-name.openai.azure.com/
+   AZURE_DEPLOYMENT_NAME=your-deployment-name
+   AZURE_OPENAI_API_KEY=your-azure-openai-api-key
    ```
 
 4. **Load environment variables and run:**
