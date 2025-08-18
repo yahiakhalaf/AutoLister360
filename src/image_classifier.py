@@ -1,8 +1,9 @@
 import logging
 from pathlib import Path
 import random
+from src.logging_config import setup_logging
 
-# Configure logging
+setup_logging()
 logger = logging.getLogger(__name__)
 
 def classify_car_image(image_path: str | Path) -> str:

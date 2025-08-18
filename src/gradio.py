@@ -5,13 +5,17 @@ from pathlib import Path
 from langchain_google_genai import ChatGoogleGenerativeAI
 from dotenv import load_dotenv
 import uuid
+import logging
 
 from src.text_processor import process_text
 from src.email_sender import send_car_listing_email
 from src.image_classifier import classify_car_image
+from src.logging_config import setup_logging
+
+setup_logging()
+logger = logging.getLogger(__name__)
 
 load_dotenv()
-GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 
 def initialize_llm():
     """Initialize the LLM with error handling."""
@@ -19,7 +23,7 @@ def initialize_llm():
         llm = ChatGoogleGenerativeAI(
             model="gemini-2.5-flash",
             temperature=0,
-            api_key=GEMINI_API_KEY
+            api_key=os.getenv('GEMINI_API_KEY')
         )
         return llm, "Gemini API configured successfully"
     except Exception as e:

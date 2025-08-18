@@ -1,18 +1,17 @@
-from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate
 from langchain_core.language_models import BaseLanguageModel
 
 from src.templates import CAR_LISTING_PROMPT
 from src.utils import CarListing, sanitize_input
 import logging
-import os
-from datetime import datetime
 from dotenv import load_dotenv
+
+from src.logging_config import setup_logging
+setup_logging()
+logger = logging.getLogger(__name__)
 
 # Load environment variables
 load_dotenv()
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 def create_default_car_listing() -> dict:
     """Create a default car listing structure."""
@@ -53,7 +52,7 @@ def process_text(description: str,llm:BaseLanguageModel) -> dict:
             return create_default_car_listing()
 
         # Sanitize input
-        sanitized_description = sanitize_input(description, max_length=2000, strict_mode=True, log_threats=True)
+        sanitized_description = sanitize_input(description, max_length=5000, strict_mode=True, log_threats=True)
         if not sanitized_description:
             logger.warning("Input is empty after sanitization")
             return create_default_car_listing()
