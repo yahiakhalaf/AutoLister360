@@ -1,17 +1,13 @@
 from langchain_core.prompts import PromptTemplate
 from langchain_core.language_models import BaseLanguageModel
-
 from src.templates import CAR_LISTING_PROMPT
 from src.utils import CarListing, sanitize_input
+from src.config import setup_logging, load_config
 import logging
-from dotenv import load_dotenv
 
-from src.logging_config import setup_logging
+# Configure logging
 setup_logging()
 logger = logging.getLogger(__name__)
-
-# Load environment variables
-load_dotenv()
 
 def create_default_car_listing() -> dict:
     """Create a default car listing structure."""
@@ -37,7 +33,7 @@ def create_default_car_listing() -> dict:
         }
     }
 
-def process_text(description: str,llm:BaseLanguageModel) -> dict:
+def process_text(description: str, llm: BaseLanguageModel) -> dict:
     """
     Process car description into structured JSON using LangChain and Pydantic.
     Args:
@@ -46,13 +42,22 @@ def process_text(description: str,llm:BaseLanguageModel) -> dict:
         dict: JSON with car details or default JSON on error.
     """
     try:
+        # Load config
+        config = load_config()
+        app_config = config['application']
+
         # Input validation
         if not description or not isinstance(description, str):
             logger.warning("Empty or invalid input provided")
             return create_default_car_listing()
 
         # Sanitize input
-        sanitized_description = sanitize_input(description, max_length=5000, strict_mode=True, log_threats=True)
+        sanitized_description = sanitize_input(
+            description,
+            max_length=app_config['max_input_length'],
+            strict_mode=app_config['strict_sanitization'],
+            log_threats=app_config['log_threats']
+        )
         if not sanitized_description:
             logger.warning("Input is empty after sanitization")
             return create_default_car_listing()

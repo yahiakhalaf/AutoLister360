@@ -3,14 +3,11 @@ import sys
 import logging
 from pathlib import Path
 from dotenv import load_dotenv
-from PIL import Image as PILImage
-import io
 
 # Adjust the path to import from the src directory
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from src.email_sender import send_car_listing_email, format_car_details, create_email_body
 
-# Load environment variables
 load_dotenv()
 
 # Configure logging for better output visibility

@@ -1,7 +1,7 @@
 [project]
 name = "autolister360"
 version = "0.1.0"
-description = "Add your description here"
+description = "an llm powered app to list car specifications"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -10,7 +10,5 @@ dependencies = [
     "langchain-core>=0.3.74",
     "langchain-google-genai>=2.1.9",
     "langchain-openai>=0.3.30",
-    "pillow>=11.3.0",
     "pydantic>=2.11.7",
-    "pytest>=8.4.1",
 ]

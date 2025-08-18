@@ -7,27 +7,24 @@ from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 from pathlib import Path
 import mimetypes
-from dotenv import load_dotenv
-from src.logging_config import setup_logging
+from src.config import setup_logging, load_config
 
 # Configure logging
 setup_logging()
 logger = logging.getLogger(__name__)
 
-load_dotenv()
-
 def get_smtp_config():
-    """Get SMTP configuration from environment variables."""
-    config = {
-        'smtp_server': os.getenv('SMTP_SERVER', 'smtp.gmail.com'),
-        'smtp_port': int(os.getenv('SMTP_PORT', '587')),
-        'username': os.getenv('SMTP_USERNAME'),
-        'password': os.getenv('SMTP_PASSWORD')
+    """Get SMTP configuration from config.yaml."""
+    config = load_config()
+    smtp_config = {
+        'smtp_server': config['smtp']['server'],
+        'smtp_port': config['smtp']['port'],
+        'username': config['smtp']['username'],
+        'password': config['smtp']['password']
     }
-    if not all(config.values()):
-        raise ValueError("Missing SMTP configuration in environment variables.")
-    return config
-
+    if not all(smtp_config.values()):
+        raise ValueError("Missing SMTP configuration in config.yaml.")
+    return smtp_config
 
 def format_car_details(car_data: dict) -> str:
     """Format car data into a simple HTML string."""
@@ -78,7 +75,6 @@ def format_car_details(car_data: dict) -> str:
     html += "</ul>\n"
     return html
 
-
 def create_email_body(car_data: dict, include_photo: bool = False) -> str:
     """Create HTML email body."""
     html = f"""
@@ -93,7 +89,6 @@ def create_email_body(car_data: dict, include_photo: bool = False) -> str:
     </html>
     """
     return html
-
 
 def send_car_listing_email(car_data: dict, recipient_email: str, photo_path: str | Path = None) -> bool:
     """Send car listing email with optional photo attachment."""

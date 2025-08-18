@@ -1,16 +1,15 @@
 import logging
-from datetime import datetime
 from pydantic import BaseModel, Field, model_validator
 from typing import Optional, List
 import re
-from src.logging_config import setup_logging
+from src.config import setup_logging
 
 setup_logging()
 logger = logging.getLogger(__name__)
 
 class Tires(BaseModel):
     type: str = Field(description="Type of tires (e.g., brand-new, used)", default="Unknown")
-    manufactured_year: int = Field(description="Year tires were manufactured", default=0, ge=0)  # FIXED: Added ge=0 constraint
+    manufactured_year: int = Field(description="Year tires were manufactured", default=0, ge=0)
 
 class Notice(BaseModel):
     type: str = Field(description="Type of notice (e.g., collision, repair)")
@@ -51,7 +50,6 @@ class Car(BaseModel):
 class CarListing(BaseModel):
     car: Car = Field(description="Car details")
 
-
 def sanitize_input(text: str, max_length: int = 2000, strict_mode: bool = False, log_threats: bool = True) -> str:
     """
     Enhanced input sanitization to prevent prompt injection attacks while preserving legitimate content.
@@ -65,6 +63,21 @@ def sanitize_input(text: str, max_length: int = 2000, strict_mode: bool = False,
     Returns:
         str: Sanitized input text
     """
+    # Input validation
+    if not isinstance(text, str):
+        logger.warning(f"Invalid input type received: {type(text)}")
+        return ""
+    
+    original_length = len(text)
+    
+    # Cap input length
+    if len(text) > max_length:
+        text = text[:max_length]
+        if log_threats:
+            logger.warning(f"Input truncated from {original_length} to {max_length} characters")
+    
+    threats_detected = []
+    cleaned_text = text
     
     # High-threat patterns that should always be removed
     HIGH_THREAT_PATTERNS = {
@@ -108,7 +121,6 @@ def sanitize_input(text: str, max_length: int = 2000, strict_mode: bool = False,
             r'\breset\s+(?:context|conversation|everything)\b',
             r'\bclear\s+(?:previous|all)\s+(?:context|data)\b',
         ],
-        #long sequence of unusual formatting characters
         'unusual_formatting': [
             r'={10,}', 
             r'-{10,}',  
@@ -116,22 +128,6 @@ def sanitize_input(text: str, max_length: int = 2000, strict_mode: bool = False,
             r'#{5,}',   
         ]
     }
-    
-    # Input validation
-    if not isinstance(text, str):
-        logger.warning(f"Invalid input type received: {type(text)}")
-        return ""
-    
-    original_length = len(text)
-    
-    # Cap input length
-    if len(text) > max_length:
-        text = text[:max_length]
-        if log_threats:
-            logger.warning(f"Input truncated from {original_length} to {max_length} characters")
-    
-    threats_detected = []
-    cleaned_text = text
     
     # Remove high-threat patterns (always removed)
     for category, patterns in HIGH_THREAT_PATTERNS.items():
