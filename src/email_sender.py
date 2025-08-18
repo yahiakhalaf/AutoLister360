@@ -8,11 +8,13 @@ from email.mime.image import MIMEImage
 from pathlib import Path
 import mimetypes
 from dotenv import load_dotenv
+from src.logging_config import setup_logging
+
+# Configure logging
+setup_logging()
+logger = logging.getLogger(__name__)
 
 load_dotenv()
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 def get_smtp_config():
     """Get SMTP configuration from environment variables."""

@@ -3,7 +3,9 @@ from datetime import datetime
 from pydantic import BaseModel, Field, model_validator
 from typing import Optional, List
 import re
-logging.basicConfig(level=logging.INFO)
+from src.logging_config import setup_logging
+
+setup_logging()
 logger = logging.getLogger(__name__)
 
 class Tires(BaseModel):
