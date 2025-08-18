@@ -11,3 +11,4 @@ wheels/
 logs/
 .gradio
 uv.lock
+temp/
