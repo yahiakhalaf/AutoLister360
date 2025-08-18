@@ -119,7 +119,7 @@ autolister360/
    }
    
    # Launch the application
-   uv run python src/gradio.py
+   uv run python -m src.gradio
    ```
 
 5. **Access the application:**
