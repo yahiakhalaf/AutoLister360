@@ -102,7 +102,7 @@ autolister360/
    
    # Azure OpenAI Configuration
    AZURE_DEPLOYMENT_ENDPOINT="https://your-resource-name.openai.azure.com/"
-   AZURE_DEPLOYMENT_NAME="your-gpt-4o-mini-deployment-name"
+   AZURE_DEPLOYMENT_NAME="your-deployment-name"
    AZURE_OPENAI_API_KEY="your-azure-openai-api-key"
    ```
 
