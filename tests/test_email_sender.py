@@ -52,7 +52,7 @@ def run_live_email_test():
 
     # Test 3: send_car_listing_email
     recipient = "yahiakhalaf6@gmail.com"
-    dummy_image_path= "F:/projects/AutoLister360/temp/NewTux.png"
+    dummy_image_path= "F:/projects/AutoLister360/temp/test.png"
 
     try:
         logging.info(f"\n--- Attempting to send a live email to {recipient} ---")
