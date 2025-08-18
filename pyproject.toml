@@ -6,7 +6,9 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "dotenv>=0.9.9",
+    "gradio>=5.42.0",
     "langchain-core>=0.3.74",
+    "langchain-google-genai>=2.1.9",
     "langchain-openai>=0.3.30",
     "pillow>=11.3.0",
     "pydantic>=2.11.7",
