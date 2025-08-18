@@ -10,9 +10,11 @@ smtp:
 
 # LLM Configuration
 llm:
-  model: "gemini-2.5-flash"
+  azure_endpoint: "${AZURE_DEPLOYMENT_ENDPOINT}"  
+  deployment_name: "${AZURE_DEPLOYMENT_NAME}"                        
+  api_version: "2025-01-01-preview"                             
+  api_key: "${AZURE_OPENAI_API_KEY}"                             
   temperature: 0
-  api_key: "${GEMINI_API_KEY}"
 
 # Logging Configuration
 logging:

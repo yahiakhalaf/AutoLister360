@@ -1,7 +1,7 @@
 import gradio as gr
 import re
 from pathlib import Path
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_openai import AzureChatOpenAI 
 import uuid
 import logging
 from src.text_processor import process_text
@@ -14,16 +14,19 @@ setup_logging()
 logger = logging.getLogger(__name__)
 
 def initialize_llm():
-    """Initialize the LLM with error handling."""
+    """Initialize the Azure OpenAI LLM with error handling using LangChain."""
     try:
         config = load_config()
         llm_config = config['llm']
-        llm = ChatGoogleGenerativeAI(
-            model=llm_config['model'],
-            temperature=llm_config['temperature'],
-            api_key=llm_config['api_key']
+        
+        llm = AzureChatOpenAI(
+            deployment_name=llm_config['deployment_name'],
+            azure_endpoint=llm_config['azure_endpoint'],
+            openai_api_version=llm_config['api_version'],
+            api_key=llm_config['api_key'],
+            temperature=llm_config['temperature']
         )
-        return llm, "Gemini API configured successfully"
+        return llm, "Azure OpenAI GPT-4o-mini configured successfully via LangChain"
     except Exception as e:
         return None, f"Error initializing LLM: {str(e)}"
 
