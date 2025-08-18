@@ -1,29 +1,27 @@
 import gradio as gr
-import os
 import re
 from pathlib import Path
 from langchain_google_genai import ChatGoogleGenerativeAI
-from dotenv import load_dotenv
 import uuid
 import logging
-
 from src.text_processor import process_text
 from src.email_sender import send_car_listing_email
 from src.image_classifier import classify_car_image
-from src.logging_config import setup_logging
+from src.config import setup_logging, load_config
 
+# Configure logging
 setup_logging()
 logger = logging.getLogger(__name__)
-
-load_dotenv()
 
 def initialize_llm():
     """Initialize the LLM with error handling."""
     try:
+        config = load_config()
+        llm_config = config['llm']
         llm = ChatGoogleGenerativeAI(
-            model="gemini-2.5-flash",
-            temperature=0,
-            api_key=os.getenv('GEMINI_API_KEY')
+            model=llm_config['model'],
+            temperature=llm_config['temperature'],
+            api_key=llm_config['api_key']
         )
         return llm, "Gemini API configured successfully"
     except Exception as e:
@@ -53,7 +51,6 @@ def validate_email(email):
     
     return True, "Valid email"
 
-
 def process_and_send(car_description, receiver_email, car_image):
     """Main function to process car description and send email."""
     # Initialize LLM
@@ -80,15 +77,17 @@ def process_and_send(car_description, receiver_email, car_image):
             return "Failed to process car description. Please try again.", ""
         
         # Process image if uploaded
-        temp_dir = Path("temp")
-        temp_dir.mkdir(exist_ok=True) 
+        config = load_config()
+        temp_dir = Path(config['application']['temp_directory'])
+        temp_dir.mkdir(exist_ok=True)
+        allowed_formats = config['application']['allowed_image_formats']
         if car_image is not None:
             # Get original image extension (if available) or default to .jpg
             try:
                 image_format = car_image.format.lower() if car_image.format else 'jpg'
-                extension = f".{image_format}" if image_format in ['jpg', 'jpeg', 'png', 'gif'] else '.jpg'
+                extension = f".{image_format}" if image_format in allowed_formats else '.jpg'
             except AttributeError:
-                extension = '.jpg' 
+                extension = '.jpg'
             
             unique_filename = f"car_image_{uuid.uuid4().hex}{extension}"
             temp_image_path = temp_dir / unique_filename
@@ -113,7 +112,6 @@ def process_and_send(car_description, receiver_email, car_image):
         if temp_image_path and temp_image_path.exists():
                 temp_image_path.unlink()
 
-
 def generate_car_details_summary(car_info):
     """Generate a formatted summary of car details."""
     summary = "## 📋 Processed Car Details\n\n"
@@ -129,17 +127,17 @@ def generate_car_details_summary(car_info):
     tire_year = tires.get('manufactured_year', 0)
     if tire_year > 0:
         tire_info += f" (Manufacturing Year: {tire_year})"
-    summary += f"• ** Tires:** {tire_info}\n\n"
+    summary += f"• **Tires:** {tire_info}\n\n"
     # Price information
     price = car_info.get('price')
     estimated_price = car_info.get('estimated_price')
     
     if price and price.get('amount', 0) > 0:
-        summary += f"• ** Price:** {price.get('amount', 0):,.2f} {price.get('currency', 'Unknown')}\n\n"
+        summary += f"• **Price:** {price.get('amount', 0):,.2f} {price.get('currency', 'Unknown')}\n\n"
     elif estimated_price and estimated_price.get('amount', 0) > 0:
-        summary += f"• ** Estimated Price:** {estimated_price.get('amount', 0):,.2f} {estimated_price.get('currency', 'Unknown')}\n\n"
+        summary += f"• **Estimated Price:** {estimated_price.get('amount', 0):,.2f} {estimated_price.get('currency', 'Unknown')}\n\n"
     else:
-        summary += "• ** Price:** Contact for details\n\n"
+        summary += "• **Price:** Contact for details\n\n"
     # Show notices if any
     notices = car_info.get('notices', [])
     if notices:
@@ -151,9 +149,12 @@ def generate_car_details_summary(car_info):
                 summary += f"• {str(notice)}\n\n"
     return summary
 
-
 def create_interface():
     """Create and configure the Gradio interface."""
+    # Load config for Gradio settings
+    config = load_config()
+    gradio_config = config['gradio']
+    
     # Custom CSS for better styling
     custom_css = """
     .gradio-container {
@@ -171,7 +172,7 @@ def create_interface():
     }
     """
     
-    with gr.Blocks(title="AutoLister360",theme=gr.themes.Soft(),css=custom_css) as interface:
+    with gr.Blocks(title="AutoLister360", theme=gradio_config['theme'], css=custom_css) as interface:
         
         # Header
         gr.HTML("""
@@ -243,14 +244,15 @@ def create_interface():
     
     return interface
 
-
 def main():
     """Launch the Gradio application."""
+    config = load_config()
+    gradio_config = config['gradio']
     interface = create_interface()
     interface.launch(
-        share=True,  
-        server_name="127.0.0.1",  
-        server_port=7860,
+        share=gradio_config['share'],
+        server_name=gradio_config['server_name'],
+        server_port=gradio_config['server_port'],
         show_error=True
     )
 

@@ -1,5 +1,3 @@
-# src/templates.py
-
 CAR_LISTING_PROMPT = """You are an expert at extracting structured car information from text descriptions.
 Extract the following information from the car description and return it as JSON:
 

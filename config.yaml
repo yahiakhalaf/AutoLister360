@@ -1,0 +1,41 @@
+
+# AutoLister360 Configuration File
+
+# SMTP Configuration for email sending
+smtp:
+  server: "smtp.gmail.com"
+  port: 587
+  username: "${SMTP_USERNAME}"
+  password: "${SMTP_PASSWORD}"
+
+# LLM Configuration
+llm:
+  model: "gemini-2.5-flash"
+  temperature: 0
+  api_key: "${GEMINI_API_KEY}"
+
+# Logging Configuration
+logging:
+  level: "INFO"
+  directory: "logs"
+  filename: "autolister360_%Y%m%d_%H%M%S.log"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+# Application Settings
+application:
+  max_input_length: 5000
+  strict_sanitization: true
+  log_threats: true
+  temp_directory: "temp"
+  allowed_image_formats:
+    - "jpg"
+    - "jpeg"
+    - "png"
+    - "gif"
+
+# Gradio Interface Configuration
+gradio:
+  server_name: "127.0.0.1"
+  server_port: 7860
+  share: true
+  theme: "soft"
